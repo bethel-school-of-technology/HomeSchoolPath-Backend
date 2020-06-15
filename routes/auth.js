@@ -10,10 +10,10 @@ router.post('/signup', userSignupValidator, runValidation, signup);
 router.post('/signin', userSigninValidator, runValidation, signin);
 router.get('/signout', signout);
 // to protect routes
-router.get('/secret', requireSignin, (req, res) => {
-    res.json({
-        message: 'You now have access to a private page'
-    });
-});
+//router.get('/secret', requireSignin, (req, res) => {
+    //res.json({
+        //user: req.user
+    //});
+//});
 
 module.exports = router;
