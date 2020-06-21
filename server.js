@@ -23,7 +23,7 @@ mongoose
   useCreateIndex: true,
   useFindAndModify: false,
   })
-  .then(() => console.log("Mongoose DataBase connected"));
+  .then(() => console.log("Mongoose DataBase The HomeSchool Path connected"));
 // middlewares
 app.use(morgan('dev'));
 app.use(bodyParser.json());
