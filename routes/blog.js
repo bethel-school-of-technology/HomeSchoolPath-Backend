@@ -1,7 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { create, list, listAllBlogsCategoriesTags, read, remove, update, photo } = require("../controllers/blog");
-
+const { create, list, listAllBlogsCategoriesTags, read, remove, update, photo, listRelated } = require("../controllers/blog");
 const { requireSignin, adminMiddleware } = require("../controllers/auth");
 const { default: slugify } = require("slugify");
 router.post("/blog", requireSignin, adminMiddleware, create);
@@ -10,6 +9,7 @@ router.post("/blogs-categories-tags", listAllBlogsCategoriesTags);
 router.get("/blog/:slug", read);
 router.delete("/blog/:slug", requireSignin, adminMiddleware, remove);
 router.put("/blog/:slug", requireSignin, adminMiddleware, update);
-router.get("/blog/photo/:slug");
+router.get("/blog/photo/:slug", photo);
+router.post("/blogs/related", listRelated);
 
 module.exports = router;

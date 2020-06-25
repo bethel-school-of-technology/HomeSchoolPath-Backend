@@ -119,6 +119,7 @@ exports.list = (req, res) => {
     )
     .exec((err, data) => {
       if (err) {
+        
         return res.json({
           error: errorHandler(err),
         });
@@ -148,6 +149,10 @@ exports.listAllBlogsCategoriesTags = (req, res) => {
     )
     .exec((err, data) => {
       if (err) {
+
+        // console log check
+        console.log(err)
+
         return res.json({
           error: errorHandler(err),
         });
@@ -156,6 +161,9 @@ exports.listAllBlogsCategoriesTags = (req, res) => {
       // get all categories
       Category.find({}).exec((err, c) => {
         if (err) {
+          //console log check
+          console.log(err)
+
           return res.json({
             error: errorHandler(err),
           });
@@ -164,6 +172,9 @@ exports.listAllBlogsCategoriesTags = (req, res) => {
 
         Tag.find({}).exec((err, t) => {
           if (err) {
+            // console log check
+            console.log(err)
+            
             return res.json({
               error: errorHandler(err),
             });
@@ -266,7 +277,7 @@ exports.update = (req, res) => {
       });
     });
   });
-
+};
   exports.photo = (req, res) => {
     const slug = req.params.slug.toLowerCase();
     Blog.findOne({slug})
@@ -283,4 +294,20 @@ exports.update = (req, res) => {
 
   };
   
+exports.listRelated = (req, res) => {
+  let limit = req.body.limit ? parseInt(req.body.limit) : 3;
+  const {_id, categories} = req.body.blog;
+
+  Blog.find({_id: {$ne: _id}, categories: {$in: categories}})
+  .limit(limit)
+  .populate('postedBy', '_id name profile')
+  .select('title slug excerpt postedBy createdAt updatedAt')
+  .exec((err, blogs) => {
+    if(err) {
+      return res.status(400).json({
+        error: 'Blogs not found'
+      });
+    }
+    res.json(blogs);
+  });
 };
