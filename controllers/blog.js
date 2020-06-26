@@ -119,7 +119,6 @@ exports.list = (req, res) => {
     )
     .exec((err, data) => {
       if (err) {
-        
         return res.json({
           error: errorHandler(err),
         });
@@ -149,9 +148,8 @@ exports.listAllBlogsCategoriesTags = (req, res) => {
     )
     .exec((err, data) => {
       if (err) {
-
         // console log check
-        console.log(err)
+        console.log(err);
 
         return res.json({
           error: errorHandler(err),
@@ -162,7 +160,7 @@ exports.listAllBlogsCategoriesTags = (req, res) => {
       Category.find({}).exec((err, c) => {
         if (err) {
           //console log check
-          console.log(err)
+          console.log(err);
 
           return res.json({
             error: errorHandler(err),
@@ -173,8 +171,8 @@ exports.listAllBlogsCategoriesTags = (req, res) => {
         Tag.find({}).exec((err, t) => {
           if (err) {
             // console log check
-            console.log(err)
-            
+            console.log(err);
+
             return res.json({
               error: errorHandler(err),
             });
@@ -222,10 +220,10 @@ exports.remove = (req, res) => {
 exports.update = (req, res) => {
   const slug = req.params.slug.toLowerCase();
 
-  Blog.findOne({slug}).exec((err, oldBlog) => {
+  Blog.findOne({ slug }).exec((err, oldBlog) => {
     if (err) {
       return res.status(400).json({
-        error:errorHandler(err)
+        error: errorHandler(err),
       });
     }
     let form = new formidable.IncomingForm();
@@ -237,24 +235,24 @@ exports.update = (req, res) => {
           error: "Image could not be uploaded",
         });
       }
-  
-      let slugBeforeMerge = oldBlog.slug
-      oldBlog = _.merge(oldBlog, fields)
-      oldBlog.slug = slugBeforeMerge
 
-      const {body, desc, categories, tags} = fields
+      let slugBeforeMerge = oldBlog.slug;
+      oldBlog = _.merge(oldBlog, fields);
+      oldBlog.slug = slugBeforeMerge;
+
+      const { body, desc, categories, tags } = fields;
 
       if (body) {
-        oldBlog.excerpt = smartTrim(body, 320, '', ' ...')
-      oldBlog.mdesc =stripHtml(body.substring(0 ,160))
+        oldBlog.excerpt = smartTrim(body, 320, "", " ...");
+        oldBlog.mdesc = stripHtml(body.substring(0, 160));
       }
-      
-      if(categories) {
-        oldBlog.categories = categories.split(',')
+
+      if (categories) {
+        oldBlog.categories = categories.split(",");
       }
-       
-      if(tags) {
-        oldBlog.tags = tags.split(',')
+
+      if (tags) {
+        oldBlog.tags = tags.split(",");
       }
 
       if (files.photo) {
@@ -266,7 +264,7 @@ exports.update = (req, res) => {
         oldBlog.photo.data = fs.readFileSync(files.photo.path);
         oldBlog.photo.contentType = files.photo.type;
       }
-  
+
       oldBlog.save((err, result) => {
         if (err) {
           return res.status(400).json({
@@ -278,36 +276,59 @@ exports.update = (req, res) => {
     });
   });
 };
-  exports.photo = (req, res) => {
-    const slug = req.params.slug.toLowerCase();
-    Blog.findOne({slug})
-    .select('photo')
+exports.photo = (req, res) => {
+  const slug = req.params.slug.toLowerCase();
+  Blog.findOne({ slug })
+    .select("photo")
     .exec((err, blog) => {
-       if(err || !blog) {
-         return res.status(400).json({
-           error: errorHandler(err)
-         });
-       }
-       res.set('Content-Type', blog.photo.contentType);
-       return res.send(blog.photo.data);
+      if (err || !blog) {
+        return res.status(400).json({
+          error: errorHandler(err),
+        });
+      }
+      res.set("Content-Type", blog.photo.contentType);
+      return res.send(blog.photo.data);
     });
+};
 
-  };
-  
 exports.listRelated = (req, res) => {
   let limit = req.body.limit ? parseInt(req.body.limit) : 3;
-  const {_id, categories} = req.body.blog;
+  const { _id, categories } = req.body.blog;
 
-  Blog.find({_id: {$ne: _id}, categories: {$in: categories}})
-  .limit(limit)
-  .populate('postedBy', '_id name profile')
-  .select('title slug excerpt postedBy createdAt updatedAt')
-  .exec((err, blogs) => {
-    if(err) {
-      return res.status(400).json({
-        error: 'Blogs not found'
-      });
-    }
-    res.json(blogs);
-  });
+  Blog.find({ _id: { $ne: _id }, categories: { $in: categories } })
+    .limit(limit)
+    .populate("postedBy", "_id name profile")
+    .select("title slug excerpt postedBy createdAt updatedAt")
+    .exec((err, blogs) => {
+      if (err) {
+        return res.status(400).json({
+          error: "Blogs not found",
+        });
+      }
+      res.json(blogs);
+    });
+};
+
+exports.listSearch = (req, res) => {
+  console.log(req.query);
+  const { search } = req.query;
+
+  if (search) {
+    Blog.find(
+      {
+        $or: [
+          { title: { $regex: search, $options: "i" } },
+          { body: { $regex: search, $options: "i" } },
+        ],
+      },
+      (err, blogs) => {
+        if (err) {
+          return res.status(400).json({
+            error: errorHandler(err),
+          });
+        }
+        res.json(blogs);
+      }
+    ).select("-photo -body"); //de-selection/sending with photo or body
+  }
 };
