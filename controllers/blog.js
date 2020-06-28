@@ -151,7 +151,7 @@ exports.listAllBlogsCategoriesTags = (req, res) => {
         // console log check
         //console.log(err);
         return res.json({
-          error: errorHandler(err)
+          error: errorHandler(err),
         });
       }
       blogs = data; //blogs
