@@ -149,35 +149,34 @@ exports.listAllBlogsCategoriesTags = (req, res) => {
     .exec((err, data) => {
       if (err) {
         // console log check
-        console.log(err);
-
+        //console.log(err);
         return res.json({
-          error: errorHandler(err),
+          error: errorHandler(err)
         });
       }
-      blogs = data;
+      blogs = data; //blogs
       // get all categories
       Category.find({}).exec((err, c) => {
         if (err) {
           //console log check
-          console.log(err);
+          //console.log(err);
 
           return res.json({
             error: errorHandler(err),
           });
         }
-        categories = c;
+        categories = c; // categories
 
         Tag.find({}).exec((err, t) => {
           if (err) {
             // console log check
-            console.log(err);
+            //console.log(err);
 
             return res.json({
               error: errorHandler(err),
             });
           }
-          tags = t;
+          tags = t; // return all blogs categories tags
           res.json({ blogs, categories, tags, size: blogs.length });
         });
       });
@@ -297,7 +296,7 @@ exports.listRelated = (req, res) => {
 
   Blog.find({ _id: { $ne: _id }, categories: { $in: categories } })
     .limit(limit)
-    .populate("postedBy", "_id name profile")
+    .populate("postedBy", "_id name username profile")
     .select("title slug excerpt postedBy createdAt updatedAt")
     .exec((err, blogs) => {
       if (err) {
