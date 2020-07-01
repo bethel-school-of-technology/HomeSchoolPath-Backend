@@ -1,6 +1,7 @@
 const Blog = require("../models/blog");
 const Category = require("../models/category");
 const Tag = require("../models/tag");
+const User = require("../models/user");
 const formidable = require("formidable");
 const slugify = require("slugify");
 const stripHtml = require("string-strip-html");
@@ -9,6 +10,7 @@ const { errorHandler } = require("../helpers/dbErrorHandler");
 const fs = require("fs");
 const { smartTrim } = require("../helpers/blog");
 const { exec } = require("child_process");
+const user = require("../models/user");
 
 //const { ESTALE } = require("constants");
 //const { result } = require("lodash");
@@ -27,7 +29,7 @@ exports.create = (req, res) => {
 
     if (!title || !title.length) {
       return res.status(400).json({
-        error: "title is required",
+        error: "Title is required",
       });
     }
 
@@ -291,7 +293,7 @@ exports.photo = (req, res) => {
 };
 
 exports.listRelated = (req, res) => {
-  let limit = req.body.limit ? parseInt(req.body.limit) : 3;
+  let limit = req.body.limit ? parseInt(req.body.limit) : 5;
   const { _id, categories } = req.body.blog;
 
   Blog.find({ _id: { $ne: _id }, categories: { $in: categories } })
@@ -330,4 +332,28 @@ exports.listSearch = (req, res) => {
       }
     ).select("-photo -body"); //de-selection/sending with photo or body
   }
+};
+
+exports.listByUser = (req, res) => {
+  User.findOne({ username: req.params.username }).exec((err, user) => {
+    if (err) {
+      return res.status(400).json({
+        error: errorHandler(err),
+      });
+    }
+    let userId = user._id;
+    Blog.findOne({ postedBy: userId })
+      .populate("categories", "_id name slug")
+      .populate("tags", "_id name slug")
+      .populate("postedBy", "_id name username")
+      .select("_id title slug postedBy createdAt updateAt")
+      .exec((err, data) => {
+        if (err) {
+          return res.status(400).json({
+            error: errorHandler(err),
+          });
+        }
+        res.json(data);
+      });
+  });
 };

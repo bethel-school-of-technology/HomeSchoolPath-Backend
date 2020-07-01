@@ -7,12 +7,12 @@ const { create, list, read, remove } = require("../controllers/tag");
 
 // validators
 const { runValidation } = require("../validators");
-const { tagCreateValidator } = require("../validators/tag");
+const { createTagValidator } = require("../validators/tag");
 
 // check- there is a difference from methods used for category
 router.post(
   "/tag",
-  tagCreateValidator,
+  createTagValidator,
   runValidation,
   requireSignin,
   adminMiddleware,

@@ -1,112 +1,3 @@
-/*const User = require("../models/user");
-const shortId = require("shortid");
-const jwt = require("jsonwebtoken");
-const expressJwt = require("express-jwt"); // checks for expiration
-//const user = require("../models/user");
-exports.read = (req, res) => {
-  req.profile.hashed_password = undefined;
-  return res.json(req.profile);
-};
-
-exports.signup = (req, res) => {
-  User.findOne({ email: req.body.email }).exec((err, user) => {
-    if (user) {
-      return res.status(400).json({
-        error: "Email is already taken",
-      });
-    }
-
-    const { name, email, password } = req.body;
-    let username = shortId.generate();
-    let profile = `${process.env.CLIENT_URL}/profile/${username}`;
-
-    let newUser = new User({ name, email, password, profile, username });
-    newUser.save((err, success) => {
-      if (err) {
-        return res.status(400).json({
-          error: err,
-        });
-      }
-      res.json({
-        message: "Signup successful to The Home School Path. Please sign in.",
-      });
-    });
-  });
-};
-
-exports.signin = (req, res) => {
-  const { email, password } = req.body;
-  // check if user exists in db
-  User.findOne({ email }).exec((err, user) => {
-    if (err || !user) {
-      return res.status(400).json({
-        error: "User with that email does not exist. Please signup.",
-      });
-    }
-    // authenticate - compares with database
-    if (!user.authenticate(password)) {
-      return res.stasus(400).json({
-        error: "Email and password do not match our records.",
-      });
-    }
-    // generate a token and send to client to auth the user
-    const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "1d",
-    });
-
-    res.cookie("token", token, { expiresIn: "id" });
-    const { _id, username, name, email, role } = user;
-    return res.json({
-      token,
-      user: { _id, username, name, email, role },
-    });
-  });
-};
-
-exports.signout = (req, res) => {
-  res.clearCookie("token");
-  res.json({
-    message: "Signout was successful. Happy Learning",
-  });
-};
-// takes incoming tokens with secret and compares with env secret for a match and expiration
-exports.requireSignin = expressJwt({
-  secret: process.env.JWT_SECRET,
-});
-
-exports.authMiddleware = (req, res, next) => {
-  const authUserId = req.user._id;
-  User.findById({ _id: authUserId }).exec((err, user) => {
-    if (err || !user) {
-      return res.status(400).json({
-        error: "User not found",
-      });
-    }
-    req.profile = user;
-    next();
-  });
-};
-
-exports.adminMiddleware = (req, res, next) => {
-  const adminUserId = req.user._id;
-  User.findById({ _id: adminUserId }).exec((err, user) => {
-    if (err || !user) {
-      return res.status(400).json({
-        error: "User not found",
-      });
-    }
-
-    if (user.role !== 1) {
-      return res.status(400).json({
-        error: "Admin resource. Access denied",
-      });
-    }
-
-    req.profile = user;
-    next();
-  });
-};*/
-
 const User = require("../models/user");
 const Blog = require("../models/blog");
 const shortId = require("shortid");
@@ -136,7 +27,7 @@ exports.signup = (req, res) => {
       }
 
       res.json({
-        message: "Signup success! Please signin.",
+        message: "Signup was successful to The Homeschool Path! Please signin.",
       });
     });
   });
@@ -144,20 +35,21 @@ exports.signup = (req, res) => {
 
 exports.signin = (req, res) => {
   const { email, password } = req.body;
-  // check if user exist
+
+  // check if user exist in the database
   User.findOne({ email }).exec((err, user) => {
     if (err || !user) {
       return res.status(400).json({
         error: "User with that email does not exist. Please signup.",
       });
     }
-    // authenticate
+    // authenticate - compares with database
     if (!user.authenticate(password)) {
       return res.status(400).json({
         error: "Email and password do not match.",
       });
     }
-    // generate a token and send to client
+    // generate a token and send to client to auth the user
     const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, {
       expiresIn: "1d",
     });
@@ -174,10 +66,11 @@ exports.signin = (req, res) => {
 exports.signout = (req, res) => {
   res.clearCookie("token");
   res.json({
-    message: "Signout success",
+    message: "Signout was successfully, Happy Learning",
   });
 };
 
+// takes incoming tokens with secret and compares with env secret for a match and expiration
 exports.requireSignin = expressJwt({
   secret: process.env.JWT_SECRET, // req.user
 });
