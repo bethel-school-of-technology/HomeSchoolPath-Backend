@@ -10,10 +10,8 @@ const { errorHandler } = require("../helpers/dbErrorHandler");
 const fs = require("fs");
 const { smartTrim } = require("../helpers/blog");
 const { exec } = require("child_process");
-const user = require("../models/user");
 
 //const { ESTALE } = require("constants");
-//const { result } = require("lodash");
 
 exports.create = (req, res) => {
   let form = new formidable.IncomingForm();
@@ -79,7 +77,7 @@ exports.create = (req, res) => {
           error: errorHandler(err),
         });
       }
-      //res.json(result);
+
       Blog.findByIdAndUpdate(
         result._id,
         { $push: { categories: arrayOfCategories } },
@@ -162,7 +160,6 @@ exports.listAllBlogsCategoriesTags = (req, res) => {
         if (err) {
           //console log check
           //console.log(err);
-
           return res.json({
             error: errorHandler(err),
           });
@@ -173,7 +170,6 @@ exports.listAllBlogsCategoriesTags = (req, res) => {
           if (err) {
             // console log check
             //console.log(err);
-
             return res.json({
               error: errorHandler(err),
             });
@@ -293,7 +289,7 @@ exports.photo = (req, res) => {
 };
 
 exports.listRelated = (req, res) => {
-  let limit = req.body.limit ? parseInt(req.body.limit) : 5;
+  let limit = req.body.limit ? parseInt(req.body.limit) : 3;
   const { _id, categories } = req.body.blog;
 
   Blog.find({ _id: { $ne: _id }, categories: { $in: categories } })

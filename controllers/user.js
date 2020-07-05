@@ -1,4 +1,4 @@
-const User = require("../models/user.js");
+const User = require("../models/user");
 const Blog = require("../models/blog");
 const _ = require("lodash");
 const formidable = require("formidable");
@@ -29,7 +29,7 @@ exports.publicProfile = (req, res) => {
       .populate("postedBy", "_id name")
       .limit(10)
       .select(
-        "_id title slug excerpt categories tags postedBy createdAt updateAt"
+        "_id title slug excerpt categories tags postedBy createdAt updatedAt"
       )
       .exec((err, data) => {
         if (err) {
@@ -61,14 +61,14 @@ exports.update = (req, res) => {
 
     if (fields.password && fields.password.length < 6) {
       return res.status(400).json({
-        error: "password should be at least 6 characters long",
+        error: "Password should be min 6 characters long",
       });
     }
 
     if (files.photo) {
       if (files.photo.size > 10000000) {
         return res.status(400).json({
-          eror: "Image should be less than 1mb",
+          error: "Image should be less than 1mb",
         });
       }
       user.photo.data = fs.readFileSync(files.photo.path);

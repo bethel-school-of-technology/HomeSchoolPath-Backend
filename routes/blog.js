@@ -20,7 +20,7 @@ const {
   canUpdateDeleteBlog,
 } = require("../controllers/auth");
 
-//const { default: slugify } = require("slugify");
+const { default: slugify } = require("slugify");
 // Controller Methods
 router.post("/blog", requireSignin, adminMiddleware, create);
 router.get("/blogs", list);
