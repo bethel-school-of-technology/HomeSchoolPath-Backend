@@ -2,8 +2,8 @@ const express = require("express");
 const morgan = require("morgan");
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
-const mongoose = require("mongoose");
 const cors = require("cors");
+const mongoose = require("mongoose");
 require("dotenv").config();
 
 // bring routes
