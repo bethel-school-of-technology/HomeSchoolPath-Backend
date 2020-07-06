@@ -9,8 +9,7 @@ const _ = require("lodash");
 const { errorHandler } = require("../helpers/dbErrorHandler");
 const fs = require("fs");
 const { smartTrim } = require("../helpers/blog");
-const { exec } = require("child_process");
-
+//const { exec } = require("child_process");
 //const { ESTALE } = require("constants");
 
 exports.create = (req, res) => {
@@ -338,7 +337,7 @@ exports.listByUser = (req, res) => {
       });
     }
     let userId = user._id;
-    Blog.findOne({ postedBy: userId })
+    Blog.find({ postedBy: userId })
       .populate("categories", "_id name slug")
       .populate("tags", "_id name slug")
       .populate("postedBy", "_id name username")
