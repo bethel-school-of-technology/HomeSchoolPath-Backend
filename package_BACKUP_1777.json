@@ -4,8 +4,12 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+<<<<<<< HEAD
     "start": "node ./bin/www",
     "devstart": "nodemon ./bin/www"
+=======
+    "start": "nodemon server.js"
+>>>>>>> dev
   },
   "repository": {
     "type": "git",
